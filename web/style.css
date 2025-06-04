@@ -1,5 +1,28 @@
 html {
-    background-color: pink;
+    background-color: #151515;
+}
+
+* {
+    color: white;
+    font-family: "Poppins";
+}
+
+a {
+    text-decoration: underline;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+input {
+    width: 48px;
+}
+
+button {
+    background-color: white;
+    color: black;
+    border: none;
 }
 
 form {
@@ -8,5 +31,18 @@ form {
 }
 
 form * {
-    width: 50%;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+#img {
+    width: 456px;
+    margin-top: 15px;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
