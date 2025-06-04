@@ -5,8 +5,10 @@ use std::{
     sync::Mutex,
 };
 
+use actix_files::NamedFile;
 use actix_multipart::form::{MultipartForm, tempfile::TempFile};
-use actix_web::{App, HttpResponse, HttpServer, Responder, get, post, web};
+use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, get, post, web};
+use serde_json::json;
 use tiny_id::ShortCodeGenerator;
 
 #[derive(Debug, MultipartForm)]
@@ -42,11 +44,26 @@ async fn upload(
         .unwrap_or(".bin");
 
     // write form data
-    let mut file =
+    let mut written_file =
         File::create(Path::new("./files").join(format!("{}.{}", id, extension))).unwrap();
-    file.write_all(&data).unwrap();
+    written_file.write_all(&data).unwrap();
 
-    HttpResponse::Ok().body(id)
+    HttpResponse::Ok().json(json!({ "id": id }))
+}
+
+#[get("/file/{id}")]
+async fn file(req: HttpRequest, id: web::Path<String>) -> impl Responder {
+    let path = Path::new("./files").join(id.to_string());
+
+    match std::fs::exists(path.clone()) {
+        Ok(true) => NamedFile::open(path.clone()).unwrap().into_response(&req),
+        Ok(false) => HttpResponse::BadRequest().json(json!({
+            "error": "file was not found"
+        })),
+        Err(e) => HttpResponse::InternalServerError().json(json!({
+            "error": e.to_string()
+        })),
+    }
 }
 
 #[get("/hello")]
@@ -66,6 +83,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(state.clone())
             .service(hello)
             .service(upload)
+            .service(file)
             .service(actix_files::Files::new("/", "./web").index_file("index.html"))
     })
     .bind(("127.0.0.1", 80))?

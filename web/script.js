@@ -9,9 +9,9 @@ document
       body: formData,
     });
     if (response.ok) {
-      const id = await response.text();
-      console.log(id);
-      window.location.href = `${window.location.href}file/${id}`;
+      const data = await response.json();
+      console.log(data);
+      window.location.href = `${window.location.href}file/${data.id}`;
     } else {
       alert("Upload failed.");
     }

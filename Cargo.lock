@@ -563,6 +563,7 @@ dependencies = [
  "actix-files",
  "actix-multipart",
  "actix-web",
+ "serde_json",
  "tiny_id",
 ]
 
