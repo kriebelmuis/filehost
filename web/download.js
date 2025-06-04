@@ -1,8 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("img").onerror = function () {
-    document.getElementById("err").style.display = "block";
-  };
-
   const downloadBtn = document.getElementById("downloadButton");
   const progressBar = document.getElementById("downloadProgress");
   const data = document.getElementById("data");
