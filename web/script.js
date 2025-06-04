@@ -11,7 +11,7 @@ document
     if (response.ok) {
       const data = await response.json();
       console.log(data);
-      window.location.href = `${window.location.href}file/${data.id}`;
+      window.location.href = `${window.location.href}file/${data.id}.${data.ext}`;
     } else {
       alert("Upload failed.");
     }

@@ -29,7 +29,6 @@ async fn upload(
     // lock the mutex and generate fileid
     let mut generator = state.generator.lock().unwrap();
     let id = generator.next_int().to_string();
-    println!("{}", id);
 
     // read form data
     let mut data = vec![];
@@ -48,12 +47,20 @@ async fn upload(
         File::create(Path::new("./files").join(format!("{}.{}", id, extension))).unwrap();
     written_file.write_all(&data).unwrap();
 
-    HttpResponse::Ok().json(json!({ "id": id }))
+    println!("uploaded file {}.{}", id, extension);
+
+    HttpResponse::Ok().json(json!({ "id": id, "ext": extension }))
 }
 
-#[get("/file/{id}")]
-async fn file(req: HttpRequest, id: web::Path<String>) -> impl Responder {
-    let path = Path::new("./files").join(id.to_string());
+#[get("/file/{filename}")]
+async fn file(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
+    println!(
+        "{} wants file {}",
+        req.peer_addr().unwrap(),
+        filename.to_string()
+    );
+
+    let path = Path::new("./files").join(filename.to_string());
 
     match std::fs::exists(path.clone()) {
         Ok(true) => NamedFile::open(path.clone()).unwrap().into_response(&req),
