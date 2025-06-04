@@ -8,6 +8,7 @@ use std::{
 use actix_files::NamedFile;
 use actix_multipart::form::{MultipartForm, tempfile::TempFile};
 use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, get, post, web};
+use bytesize::ByteSize;
 use serde_json::json;
 use tiny_id::ShortCodeGenerator;
 
@@ -85,6 +86,8 @@ async fn file(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
     let path = Path::new("./files").join(filename.to_string());
 
     if std::fs::exists(path.clone()).unwrap() {
+        let filestat = std::fs::metadata(path.clone()).unwrap();
+
         let template = std::fs::read_to_string("./web/file.html").unwrap();
 
         let filename_str = path.file_name().unwrap().to_string_lossy();
@@ -92,7 +95,8 @@ async fn file(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
 
         let html = template
             .replace("{{filename}}", &filename_str)
-            .replace("{{download_url}}", &download_url);
+            .replace("{{download_url}}", &download_url)
+            .replace("{{filesize}}", &ByteSize(filestat.len()).to_string());
 
         HttpResponse::Ok().content_type("text/html").body(html)
     } else {
