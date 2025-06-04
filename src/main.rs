@@ -26,7 +26,7 @@ async fn upload(
     state: web::Data<AppState>,
     MultipartForm(form): MultipartForm<UploadForm>,
 ) -> impl Responder {
-    // lock the mutex and generate fileid
+    // lock the mutex for other uploads rn and generate file id
     let mut generator = state.generator.lock().unwrap();
     let id = generator.next_int().to_string();
 
@@ -47,8 +47,8 @@ async fn upload(
         File::create(Path::new("./files").join(format!("{}.{}", id, extension))).unwrap();
     written_file.write_all(&data).unwrap();
 
+    // respond with info
     println!("uploaded file {}.{}", id, extension);
-
     HttpResponse::Ok().json(json!({ "id": id, "ext": extension }))
 }
 
@@ -62,6 +62,7 @@ async fn file(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
 
     let path = Path::new("./files").join(filename.to_string());
 
+    // handle if exists, does not exists or something else
     match std::fs::exists(path.clone()) {
         Ok(true) => NamedFile::open(path.clone()).unwrap().into_response(&req),
         Ok(false) => HttpResponse::BadRequest().json(json!({
@@ -80,11 +81,16 @@ async fn hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // create dir for files
+    std::fs::create_dir_all("./files").unwrap();
+
+    // create id generator for state to share between services
     let generator = ShortCodeGenerator::<char>::new_alphanumeric(4);
     let state = web::Data::new(AppState {
         generator: Mutex::new(generator),
     });
 
+    // add endpoints (servicess)
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
