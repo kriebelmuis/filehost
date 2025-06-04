@@ -11,14 +11,20 @@
         <title>Download {{filename}}</title>
     </head>
     <body>
+        <div id="data" data-download="{{download_url}}"></div>
         <div id="container">
             <h1>File: {{filename}}</h1>
-            <a href="{{download_url}}" download>Download</a>
-            <progress value=".5"></progress>
+            <a id="downloadButton">Download</a>
+            <progress
+                id="downloadProgress"
+                style="display: none"
+                max="100"
+                value="0"
+            ></progress>
 
             <img id="img" src="{{download_url}}" alt="download preview" />
             <div id="err" style="display: none">no preview available</div>
         </div>
-        <script src="/script.js"></script>
+        <script src="/download.js"></script>
     </body>
 </html>

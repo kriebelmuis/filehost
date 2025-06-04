@@ -8,11 +8,18 @@ html {
 }
 
 a {
+    color: royalblue;
     text-decoration: underline;
+    cursor: pointer;
 }
 
 a:hover {
     text-decoration: none;
+}
+
+progress {
+    width: 456px;
+    height: 15px;
 }
 
 input {
