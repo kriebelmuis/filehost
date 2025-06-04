@@ -36,7 +36,7 @@ async fn upload(
 
     let filename = form.file.file_name.as_ref().unwrap();
 
-    // get input extension, to string if ok, .bin if error
+    // get input extension, to string, .bin if error
     let extension = Path::new(filename)
         .extension()
         .and_then(|e| e.to_str())
@@ -52,8 +52,8 @@ async fn upload(
     HttpResponse::Ok().json(json!({ "id": id, "ext": extension }))
 }
 
-#[get("/file/{filename}")]
-async fn file(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
+#[get("/dl/{filename}")]
+async fn dl(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
     println!(
         "{} wants file {}",
         req.peer_addr().unwrap(),
@@ -74,6 +74,32 @@ async fn file(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
     }
 }
 
+#[get("/file/{filename}")]
+async fn file(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
+    println!(
+        "{} wants filepage {}",
+        req.peer_addr().unwrap(),
+        filename.to_string()
+    );
+
+    let path = Path::new("./files").join(filename.to_string());
+
+    if std::fs::exists(path.clone()).unwrap() {
+        let template = std::fs::read_to_string("./web/file.html").unwrap();
+
+        let filename_str = path.file_name().unwrap().to_string_lossy();
+        let download_url = format!("/dl/{}", filename_str);
+
+        let html = template
+            .replace("{{filename}}", &filename_str)
+            .replace("{{download_url}}", &download_url);
+
+        HttpResponse::Ok().content_type("text/html").body(html)
+    } else {
+        HttpResponse::NotFound().body("File not found")
+    }
+}
+
 #[get("/hello")]
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -82,7 +108,7 @@ async fn hello() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // create dir for files
-    std::fs::create_dir_all("./files").unwrap();
+    // std::fs::create_dir_all("./files").unwrap();
 
     // create id generator for state to share between services
     let generator = ShortCodeGenerator::<char>::new_alphanumeric(4);
@@ -96,6 +122,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(state.clone())
             .service(hello)
             .service(upload)
+            .service(dl)
             .service(file)
             .service(actix_files::Files::new("/", "./web").index_file("index.html"))
     })
