@@ -100,7 +100,9 @@ async fn file(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
 
         HttpResponse::Ok().content_type("text/html").body(html)
     } else {
-        HttpResponse::NotFound().body("File not found")
+        HttpResponse::NotFound().json(json!({
+            "error": "could not find file to dl"
+        }))
     }
 }
 
@@ -112,7 +114,7 @@ async fn hello() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // create dir for files
-    // std::fs::create_dir_all("./files").unwrap();
+    std::fs::create_dir_all("./files").unwrap();
 
     // create id generator for state to share between services
     let generator = ShortCodeGenerator::<char>::new_alphanumeric(4);
