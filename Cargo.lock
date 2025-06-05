@@ -573,6 +573,7 @@ dependencies = [
  "humanize-bytes",
  "serde_json",
  "tiny_id",
+ "tokio",
 ]
 
 [[package]]

@@ -1,9 +1,4 @@
-use std::{
-    fs::File,
-    io::{Read, Write},
-    path::Path,
-    sync::Mutex,
-};
+use std::{io::Read, path::Path, sync::Mutex};
 
 use actix_files::NamedFile;
 use actix_multipart::form::{MultipartForm, tempfile::TempFile};
@@ -11,6 +6,8 @@ use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, get, post
 use bytesize::ByteSize;
 use serde_json::json;
 use tiny_id::ShortCodeGenerator;
+use tokio::fs;
+use tokio::io::AsyncWriteExt;
 
 #[derive(Debug, MultipartForm)]
 struct UploadForm {
@@ -45,8 +42,10 @@ async fn upload(
 
     // write form data
     let mut written_file =
-        File::create(Path::new("./files").join(format!("{}.{}", id, extension))).unwrap();
-    written_file.write_all(&data).unwrap();
+        fs::File::create(Path::new("./files").join(format!("{}.{}", id, extension)))
+            .await
+            .unwrap();
+    written_file.write_all(&data).await.unwrap();
 
     // respond with info
     println!("uploaded file {}.{}", id, extension);
@@ -85,10 +84,9 @@ async fn file(req: HttpRequest, filename: web::Path<String>) -> impl Responder {
 
     let path = Path::new("./files").join(filename.to_string());
 
-    if std::fs::exists(path.clone()).unwrap() {
-        let filestat = std::fs::metadata(path.clone()).unwrap();
-
-        let template = std::fs::read_to_string("./web/file.html").unwrap();
+    if fs::try_exists(path.clone()).await.unwrap() {
+        let filestat = fs::metadata(path.clone()).await.unwrap();
+        let template = fs::read_to_string("./web/file.html").await.unwrap();
 
         let filename_str = path.file_name().unwrap().to_string_lossy();
         let download_url = format!("/dl/{}", filename_str);
@@ -132,6 +130,7 @@ async fn main() -> std::io::Result<()> {
             .service(file)
             .service(actix_files::Files::new("/", "./web").index_file("index.html"))
     })
+    .workers(4)
     .bind(("127.0.0.1", 80))?
     .run()
     .await
