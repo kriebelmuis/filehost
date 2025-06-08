@@ -40,11 +40,11 @@ textarea {
 }
 
 #file {
-    color: #f8f8ff;
+    color: white;
 }
 
 button {
-    background-color: #f8f8ff;
+    background-color: white;
     color: black;
     border-radius: 5px;
     border-color: transparent;
