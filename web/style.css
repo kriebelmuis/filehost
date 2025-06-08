@@ -7,6 +7,11 @@ html {
     font-family: "Poppins";
 }
 
+.logo {
+    width: 128px;
+    margin-bottom: 15px;
+}
+
 a {
     color: royalblue;
     text-decoration: underline;
