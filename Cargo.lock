@@ -571,6 +571,7 @@ dependencies = [
  "actix-web",
  "bytesize",
  "humanize-bytes",
+ "serde",
  "serde_json",
  "tiny_id",
  "tokio",

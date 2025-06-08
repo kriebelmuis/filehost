@@ -27,19 +27,36 @@ progress {
     height: 15px;
 }
 
-input {
+input,
+textarea {
     width: 48px;
+    color: black;
+}
+
+#file {
+    color: #f8f8ff;
 }
 
 button {
-    background-color: white;
+    background-color: #f8f8ff;
     color: black;
-    border: none;
+    border-radius: 5px;
+    border-color: transparent;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+}
+
+nav * {
+    margin-right: 5px;
 }
 
 form {
     display: flex;
     flex-direction: column;
+    width: 248px;
 }
 
 form * {
