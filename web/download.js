@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((res) => res.blob())
       .then((blob) => {
-        // Create a link and trigger download
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = data.dataset.download.split("/").pop();
