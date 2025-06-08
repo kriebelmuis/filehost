@@ -2,12 +2,19 @@ use std::{io::Read, path::Path, sync::Mutex};
 
 use actix_files::NamedFile;
 use actix_multipart::form::{MultipartForm, tempfile::TempFile};
-use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, get, post, web};
+use actix_web::{App, HttpRequest, HttpResponse, HttpServer, Responder, get, post, web, Error};
 use bytesize::ByteSize;
 use serde_json::json;
 use tiny_id::ShortCodeGenerator;
 use tokio::fs;
 use tokio::io::AsyncWriteExt;
+
+#[derive(serde::Deserialize)]
+struct ContactForm {
+    name: String,
+    email: String,
+    message: String,
+}
 
 #[derive(Debug, MultipartForm)]
 struct UploadForm {
@@ -109,6 +116,18 @@ async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
+#[post("/submit_contact")]
+async fn submit_contact(form: web::Form<ContactForm>) -> Result<HttpResponse, Error> {
+    println!("name: {}", form.name);
+    println!("email: {}", form.email);
+    println!("message: {}", form.message);
+
+    Ok(HttpResponse::Ok().json(json!({
+        "status": "success",
+        "message": "Thank you for contacting us!"
+    })))
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // create dir for files
@@ -120,6 +139,8 @@ async fn main() -> std::io::Result<()> {
         generator: Mutex::new(generator),
     });
 
+    println!("hi");
+
     // add endpoints (servicess)
     HttpServer::new(move || {
         App::new()
@@ -128,10 +149,12 @@ async fn main() -> std::io::Result<()> {
             .service(upload)
             .service(dl)
             .service(file)
+            .service(submit_contact)
             .service(actix_files::Files::new("/", "./web").index_file("index.html"))
+            .service(submit_contact)
     })
     .workers(4)
-    .bind(("127.0.0.1", 80))?
+    .bind(("127.0.0.1", 6969))?
     .run()
     .await
 }
