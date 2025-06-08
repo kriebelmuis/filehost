@@ -16,9 +16,15 @@ a {
     color: royalblue;
     text-decoration: underline;
     cursor: pointer;
+
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease;
 }
 
 a:hover {
+    transform: scale(1.1);
+    color: royalblue;
     text-decoration: none;
 }
 
@@ -42,6 +48,15 @@ button {
     color: black;
     border-radius: 5px;
     border-color: transparent;
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.1);
+    background-color: royalblue;
+    color: white;
 }
 
 nav {
