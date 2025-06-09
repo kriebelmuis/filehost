@@ -1,0 +1,117 @@
+body {
+    min-height: 100vh;
+    background-image: url("/skyline.jpg");
+    backdrop-filter: blur(5px);
+    background-repeat: no-repeat;
+    background-position: 30%;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+* {
+    color: white;
+    padding: 0;
+    margin: 0;
+    font-family: "Poppins";
+}
+
+.logo {
+    width: 128px;
+    margin-bottom: 15px;
+}
+
+a {
+    color: royalblue;
+    text-decoration: underline;
+    cursor: pointer;
+
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease;
+}
+
+a:hover {
+    transform: scale(1.1);
+    color: royalblue;
+    text-decoration: none;
+}
+
+progress {
+    width: 456px;
+    height: 15px;
+}
+
+input,
+textarea {
+    width: 50%;
+    color: black;
+}
+
+#file {
+    color: white;
+}
+
+button {
+    background-color: white;
+    color: black;
+    border-radius: 5px;
+    border-color: transparent;
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.1);
+    background-color: royalblue;
+    color: white;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+}
+
+nav * {
+    margin-right: 5px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 248px;
+}
+
+form * {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+#img {
+    margin-top: 15px;
+    height: 30vh;
+    margin-top: 15px;
+
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease;
+}
+
+#img:hover {
+    height: 30vh;
+    margin-top: 15px;
+
+    cursor: pointer;
+
+    transform: scale(1.1);
+}
+
+ol {
+    padding-left: 30px;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

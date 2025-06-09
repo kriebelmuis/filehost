@@ -18,7 +18,7 @@ struct ContactForm {
 
 #[derive(Debug, MultipartForm)]
 struct UploadForm {
-    #[multipart(limit = "100MB")]
+    #[multipart(limit = "10GB")]
     file: TempFile,
 }
 
@@ -154,7 +154,7 @@ async fn main() -> std::io::Result<()> {
             .service(submit_contact)
     })
     .workers(4)
-    .bind(("127.0.0.1", 6969))?
+    .bind(("127.0.0.1", 9000))?
     .run()
     .await
 }
